@@ -27,7 +27,7 @@ object UserHolder {
         rawPhone: String
     ) : User {
 
-        if(!checkPhone(rawPhone)){
+        if(!rawPhone.replace(" ","") .matches("""^(\+7)?(\(?\d{3}\)?[\- ]?)?[\d\- ]{7,10}${'$'}""".toRegex())){
             throw IllegalArgumentException("Enter a valid phone number starting with a + and containing 11 digits")
         }
 
@@ -43,12 +43,13 @@ object UserHolder {
 
     fun loginUser(login: String, password: String): String? {
 
-        var userLogin: String = login
-        if(checkPhone(userLogin)){
+        var userLogin: String?
+        userLogin = login.trim()
+        if(userLogin.replace(" ","") .matches("""^(\+7)?(\(?\d{3}\)?[\- ]?)?[\d\- ]{7,10}${'$'}""".toRegex())){
             userLogin = userLogin.replace("""[^+\d]""".toRegex(), "")
         }
 
-        return map[userLogin.trim()]?.run {
+        return map[userLogin]?.run {
             if (checkPassword(password)) this.userInfo
             else null
         }
@@ -70,14 +71,6 @@ object UserHolder {
         map[userLogin]?.setAccessCodeAndPassword()
     }
 
-    fun checkPhone(phone: String) : Boolean
-    {
-        if(phone.replace(" ","").matches("""^(\+7)?(\(?\d{3}\)?[\- ]?)?[\d\- ]{7,10}${'$'}""".toRegex())) {
 
-            return true
-        }
-
-        return false
-    }
 
 }
