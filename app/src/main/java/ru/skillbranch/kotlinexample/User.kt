@@ -26,7 +26,7 @@ class User private constructor(
             .joinToString(" ")
     private var phone: String? = null
             set(value) {
-                field = value?.replace("[^+\\d]".toRegex(), "")
+                field = value?.replace("""[^+\d]""".toRegex(), "")
             }
     private var _login: String? = null
     var login: String
@@ -61,10 +61,14 @@ class User private constructor(
         rawPhone: String
     ): this(firstName, lastName, rawPhone = rawPhone, meta = mapOf("auth" to "sms")) {
         println("Secondary phone constructor")
+        setAccessCodeAndPassword()
+    }
+
+    fun setAccessCodeAndPassword() {
         val code = generateAccessCode()
         passwordHash = encrypt(code)
         accessCode = code
-        sendAccessCodeToUser(rawPhone, code)
+        sendAccessCodeToUser(phone, code)
     }
 
     init {
